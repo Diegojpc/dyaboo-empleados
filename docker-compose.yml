@@ -1,0 +1,100 @@
+services:
+
+  # ──────────────────────────────────────────────
+  # PostgreSQL 16 – Base de datos persistente
+  # ──────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: dyaboo-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-dyaboo_db}
+      POSTGRES_USER: ${POSTGRES_USER:-dyaboo_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dyaboo_secret}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"   # 5433 en host para no colisionar con Postgres local
+    networks:
+      - dyaboo-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-dyaboo_user} -d ${POSTGRES_DB:-dyaboo_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  # ──────────────────────────────────────────────
+  # .NET 8 WebAPI – Backend (Clean Architecture)
+  # ──────────────────────────────────────────────
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: final
+    container_name: dyaboo-api
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: >-
+        Host=postgres;Port=5432;
+        Database=${POSTGRES_DB:-dyaboo_db};
+        Username=${POSTGRES_USER:-dyaboo_user};
+        Password=${POSTGRES_PASSWORD:-dyaboo_secret};
+        Pooling=true;MinPoolSize=5;MaxPoolSize=100;
+        Connection Idle Lifetime=300;
+    ports:
+      - "8080:8080"
+    networks:
+      - dyaboo-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 25s
+
+  # ──────────────────────────────────────────────
+  # Next.js 14 – Frontend (App Router + TypeScript)
+  # ──────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: runner
+    container_name: dyaboo-frontend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: "1"
+      # URL pública que usa el navegador del cliente
+      NEXT_PUBLIC_API_URL: http://localhost:8080
+      # URL interna que usan los Server Components y Route Handlers
+      API_INTERNAL_URL: http://api:8080
+    ports:
+      - "3000:3000"
+    networks:
+      - dyaboo-net
+    depends_on:
+      api:
+        condition: service_healthy
+
+# ──────────────────────────────────────────────
+# Volúmenes nombrados
+# ──────────────────────────────────────────────
+volumes:
+  postgres-data:
+    driver: local
+
+# ──────────────────────────────────────────────
+# Red interna aislada
+# ──────────────────────────────────────────────
+networks:
+  dyaboo-net:
+    driver: bridge
+    name: dyaboo-network
