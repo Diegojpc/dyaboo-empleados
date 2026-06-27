@@ -1,0 +1,58 @@
+{
+  "name": "dyaboo-erp",
+  "version": "1.0.0",
+  "description": "Dyaboo ERP — Sistema de Gestión Empresarial",
+  "main": "src/main.js",
+  "author": "Dyaboo",
+  "private": true,
+  "scripts": {
+    "start":        "electron .",
+    "build":        "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder build --win --publish never",
+    "build:dir":    "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder build --win --target dir --publish never",
+    "build:linux":  "electron-builder build --linux --publish never"
+  },
+  "devDependencies": {
+    "electron":         "^31.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId":       "com.dyaboo.erp",
+    "productName": "Dyaboo ERP",
+    "copyright":   "Copyright © 2026 Dyaboo",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "splash/**/*",
+      "icons/**/*",
+      "config.json"
+    ],
+    "extraResources": [
+      { "from": "config.json", "to": "config.json" }
+    ],
+    "win": {
+      "target": [
+        { "target": "nsis",     "arch": ["x64"] },
+        { "target": "portable", "arch": ["x64"] }
+      ],
+      "icon":             "icons/icon.ico",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "nsis": {
+      "oneClick":              false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName":          "Dyaboo ERP",
+      "installerIcon":         "icons/icon.ico",
+      "uninstallerIcon":       "icons/icon.ico",
+      "license":               null
+    },
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "icon":   "icons/icon.png",
+      "category": "Office"
+    }
+  }
+}

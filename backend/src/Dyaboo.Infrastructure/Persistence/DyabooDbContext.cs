@@ -10,6 +10,7 @@ public class DyabooDbContext(DbContextOptions<DyabooDbContext> options)
     public DbSet<User> Users => Set<User>();
     public DbSet<ProductReference> ProductReferences => Set<ProductReference>();
     public DbSet<ProductVariant> ProductVariants => Set<ProductVariant>();
+    public DbSet<ProductImage> ProductImages => Set<ProductImage>();
     public DbSet<ProductionOrder> ProductionOrders => Set<ProductionOrder>();
     public DbSet<ProductionOrderItem> ProductionOrderItems => Set<ProductionOrderItem>();
     public DbSet<WarehouseLocation> WarehouseLocations => Set<WarehouseLocation>();

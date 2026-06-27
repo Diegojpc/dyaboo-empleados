@@ -6,9 +6,17 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        brand: { DEFAULT: '#4F46E5', light: '#818CF8', dark: '#3730A3' }
-      }
-    }
+        dyaboo: {
+          teal:         '#108474',
+          'teal-hover': '#0a6359',
+          'teal-light': '#e8f5f3',
+          cream:        '#F0EFEB',
+          beige:        '#eee6de',
+          tan:          '#e5d3c4',
+          brown:        '#473c38',
+        },
+      },
+    },
   },
   plugins: [],
 }

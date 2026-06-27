@@ -12,6 +12,7 @@ public record ProductReferenceListItem(
     string Description,
     bool IsActive,
     IReadOnlyList<VariantListItem> Variants,
+    IReadOnlyList<ImageListItem> Images,
     DateTime CreatedAt);
 
 public record VariantListItem(
@@ -22,3 +23,10 @@ public record VariantListItem(
     string ColorHex,
     decimal CostPrice,
     int StockQuantity);
+
+public record ImageListItem(
+    Guid Id,
+    string FileName,
+    string OriginalName,
+    string Url,
+    int SortOrder);

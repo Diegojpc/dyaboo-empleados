@@ -22,6 +22,50 @@ namespace Dyaboo.Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Dyaboo.Domain.Entities.ProductImage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(260)
+                        .HasColumnType("character varying(260)");
+
+                    b.Property<long>("FileSize")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("OriginalName")
+                        .IsRequired()
+                        .HasMaxLength(260)
+                        .HasColumnType("character varying(260)");
+
+                    b.Property<Guid>("ProductReferenceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("SortOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductReferenceId");
+
+                    b.ToTable("product_images", (string)null);
+                });
+
             modelBuilder.Entity("Dyaboo.Domain.Entities.ProductReference", b =>
                 {
                     b.Property<Guid>("Id")
@@ -274,6 +318,17 @@ namespace Dyaboo.Infrastructure.Persistence.Migrations
                     b.ToTable("warehouse_locations", (string)null);
                 });
 
+            modelBuilder.Entity("Dyaboo.Domain.Entities.ProductImage", b =>
+                {
+                    b.HasOne("Dyaboo.Domain.Entities.ProductReference", "ProductReference")
+                        .WithMany("Images")
+                        .HasForeignKey("ProductReferenceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProductReference");
+                });
+
             modelBuilder.Entity("Dyaboo.Domain.Entities.ProductVariant", b =>
                 {
                     b.HasOne("Dyaboo.Domain.Entities.ProductReference", "ProductReference")
@@ -428,6 +483,8 @@ namespace Dyaboo.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Dyaboo.Domain.Entities.ProductReference", b =>
                 {
+                    b.Navigation("Images");
+
                     b.Navigation("Variants");
                 });
 

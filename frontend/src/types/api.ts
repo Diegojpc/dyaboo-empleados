@@ -9,6 +9,14 @@ export interface VariantDto {
   stockQuantity: number
 }
 
+export interface ProductImageDto {
+  id: string
+  fileName: string
+  originalName: string
+  url: string
+  sortOrder: number
+}
+
 export interface ProductReferenceDto {
   id: string
   name: string
@@ -17,6 +25,7 @@ export interface ProductReferenceDto {
   description: string
   isActive: boolean
   variants: VariantDto[]
+  images: ProductImageDto[]
   createdAt: string
 }
 
@@ -67,7 +76,8 @@ export interface VariantFinancialDetail {
   variantId: string
   sku: string
   size: string
-  color: string
+  colorName: string
+  colorHex: string
   stockQuantity: number
   unitCost: number
   totalValue: number

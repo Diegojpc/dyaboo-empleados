@@ -2,8 +2,152 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Variables por tema ────────────────────────────────────────────────────── */
+:root {
+  --bg: #F0EFEB;
+  --surface: #ffffff;
+  --surface-2: #eee6de;
+  --border: #e5d3c4;
+  --text: #000000;
+  --text-muted: #473c38;
+  --text-subtle: #7c7975;
+  --accent: #108474;
+  --accent-hover: #0a6359;
+  --accent-light: #e8f5f3;
+  --sidebar-bg: #ffffff;
+  --sidebar-border: #e5d3c4;
+  --sidebar-text: #000000;
+  --sidebar-muted: #7c7975;
+}
+
+.dark {
+  --bg: #0a0a0a;
+  --surface: #111111;
+  --surface-2: #1a1a1a;
+  --border: #2a2a2a;
+  --text: #F0EFEB;
+  --text-muted: #a09890;
+  --text-subtle: #6b6560;
+  --accent: #108474;
+  --accent-hover: #14a08a;
+  --accent-light: #0f2420;
+  --sidebar-bg: #000000;
+  --sidebar-border: #1a1a1a;
+  --sidebar-text: #F0EFEB;
+  --sidebar-muted: #6b6560;
+}
+
+/* ── Base ──────────────────────────────────────────────────────────────────── */
 @layer base {
+  html {
+    font-size: 18px;
+  }
+
   body {
-    @apply bg-slate-100 text-slate-800 dark:bg-slate-950 dark:text-slate-100;
+    background-color: var(--bg);
+    color: var(--text);
+  }
+
+  * {
+    border-color: var(--border);
+  }
+}
+
+/* ── Componentes reutilizables ─────────────────────────────────────────────── */
+@layer components {
+  .card {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    @apply rounded-xl shadow-sm;
+  }
+
+  .card-header {
+    border-bottom: 1px solid var(--border);
+    @apply px-4 py-3;
+  }
+
+  .table-head th {
+    background-color: var(--surface-2);
+    color: var(--text-muted);
+    @apply px-3 py-2 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap;
+  }
+
+  .table-row {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .table-row:hover {
+    background-color: var(--surface-2);
+  }
+
+  .table-row td {
+    @apply px-3 py-1.5 text-xs;
+  }
+
+  .table-row td.font-mono {
+    white-space: nowrap;
+  }
+
+  .btn-primary {
+    background-color: var(--accent);
+    @apply text-white rounded-lg px-4 py-2.5 text-sm font-medium transition-colors;
+  }
+
+  .btn-primary:hover {
+    background-color: var(--accent-hover);
+  }
+
+  .btn-primary:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  .input {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    @apply rounded-lg px-3 py-2 text-sm w-full focus:outline-none;
+  }
+
+  .input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 20%, transparent);
+  }
+
+  .input::placeholder {
+    color: var(--text-subtle);
+  }
+
+  .badge {
+    background-color: var(--accent-light);
+    color: var(--accent);
+    @apply rounded-full px-2 py-0.5 text-xs font-medium;
+  }
+
+  .stat-card {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    @apply rounded-xl shadow-sm p-5;
+  }
+
+  .page-header h1 {
+    color: var(--text);
+    @apply text-xl font-bold;
+  }
+
+  .page-header p {
+    color: var(--text-muted);
+    @apply text-xs mt-0.5;
+  }
+
+  .muted {
+    color: var(--text-muted);
+  }
+
+  .subtle {
+    color: var(--text-subtle);
+  }
+
+  .accent {
+    color: var(--accent);
   }
 }

@@ -23,7 +23,8 @@ public record VariantFinancialDetail(
     Guid VariantId,
     string SKU,
     string Size,
-    string Color,
+    string ColorName,
+    string ColorHex,
     int StockQuantity,
     decimal UnitCost,
     decimal TotalValue);

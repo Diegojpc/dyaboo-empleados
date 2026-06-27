@@ -14,6 +14,9 @@ public class ProductReference : BaseEntity
     private readonly List<ProductVariant> _variants = [];
     public IReadOnlyCollection<ProductVariant> Variants => _variants.AsReadOnly();
 
+    private readonly List<ProductImage> _images = [];
+    public IReadOnlyCollection<ProductImage> Images => _images.AsReadOnly();
+
     private ProductReference() { }  // requerido por EF Core
 
     public static ProductReference Create(

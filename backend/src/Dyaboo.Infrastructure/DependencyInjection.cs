@@ -4,6 +4,7 @@ using Dyaboo.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Minio;
 
 namespace Dyaboo.Infrastructure;
 
@@ -13,6 +14,7 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        // ── PostgreSQL ────────────────────────────────────────────────────────
         services.AddDbContext<DyabooDbContext>(options =>
             options.UseNpgsql(
                 configuration.GetConnectionString("DefaultConnection"),
@@ -21,6 +23,20 @@ public static class DependencyInjection
         services.AddScoped<IApplicationDbContext>(sp =>
             sp.GetRequiredService<DyabooDbContext>());
 
+        // ── MinIO ─────────────────────────────────────────────────────────────
+        services.AddMinio(cfg =>
+        {
+            cfg.WithEndpoint(configuration["Minio:Endpoint"] ?? "localhost:9000")
+               .WithCredentials(
+                   configuration["Minio:AccessKey"] ?? "minioadmin",
+                   configuration["Minio:SecretKey"] ?? "minioadmin")
+               .WithSSL(bool.TryParse(configuration["Minio:UseSSL"], out var ssl) && ssl);
+        });
+
+        services.AddSingleton<IStorageService, MinioStorageService>();
+        services.AddSingleton<MinioInitializer>();
+
+        // ── Auth ──────────────────────────────────────────────────────────────
         services.AddSingleton<IJwtService, JwtService>();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
 

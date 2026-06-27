@@ -58,7 +58,7 @@ export function canAccess(role: string, path: string): boolean {
 
 export function navItemsForRole(role: string) {
   const all = [
-    { href: '/',             label: 'Dashboard',    icon: '▦' },
+    { href: '/',             label: 'Inicio',       icon: '⌂' },
     { href: '/plm',          label: 'PLM',          icon: '◈' },
     { href: '/sag',          label: 'SAG',          icon: '◉' },
     { href: '/wms',          label: 'WMS',          icon: '◫' },

@@ -8,6 +8,7 @@ public interface IApplicationDbContext
     DbSet<User> Users { get; }
     DbSet<ProductReference> ProductReferences { get; }
     DbSet<ProductVariant> ProductVariants { get; }
+    DbSet<ProductImage> ProductImages { get; }
     DbSet<ProductionOrder> ProductionOrders { get; }
     DbSet<ProductionOrderItem> ProductionOrderItems { get; }
     DbSet<WarehouseLocation> WarehouseLocations { get; }

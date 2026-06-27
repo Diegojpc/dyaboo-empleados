@@ -24,7 +24,8 @@ public class GetFinancialInventoryHandler(IApplicationDbContext db)
                     v.Id,
                     v.SKU,
                     v.Size.Code,
-                    v.Color.Name + " (" + v.Color.HexCode + ")",
+                    v.Color.Name,
+                    v.Color.HexCode,
                     v.StockQuantity,
                     v.CostPrice,
                     v.StockQuantity * v.CostPrice

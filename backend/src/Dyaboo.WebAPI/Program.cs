@@ -2,6 +2,7 @@ using System.Text;
 using Dyaboo.Application;
 using Dyaboo.Infrastructure;
 using Dyaboo.Infrastructure.Persistence;
+using Dyaboo.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -69,6 +70,9 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
     await WarehouseSeeder.SeedAsync(db);
     await UserSeeder.SeedAsync(db);
+
+    var minio = scope.ServiceProvider.GetRequiredService<MinioInitializer>();
+    await minio.InitializeAsync();
 }
 
 app.UseSwagger();
@@ -76,6 +80,7 @@ app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Dyaboo ERP 
 
 app.MapHealthChecks("/health");
 app.UseCors("Dev");
+app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
