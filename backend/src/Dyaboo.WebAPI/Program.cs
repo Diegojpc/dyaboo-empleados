@@ -41,9 +41,11 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// JWT Authentication — key MUST come from env var in production
-var jwtKey = builder.Configuration["Jwt:Key"]
-    ?? throw new InvalidOperationException("Jwt:Key no está configurado.");
+// JWT Authentication — key must come from env var (Jwt__Key) in Docker / production
+var jwtKey = builder.Configuration["Jwt:Key"];
+if (string.IsNullOrWhiteSpace(jwtKey))
+    throw new InvalidOperationException(
+        "Jwt:Key no está configurado. Define JWT_SECRET_KEY en el archivo .env (mínimo 32 caracteres).");
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(o =>

@@ -1,0 +1,17 @@
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Valores de desarrollo/ejemplo que no son secretos reales"
+paths = [
+  ".env.example",
+  "USUARIOS_PRUEBA.md",
+]
+regexes = [
+  # Connection strings locales de desarrollo (postgres en localhost)
+  '''Host=localhost;Port=5433;Database=dyaboo_db;Username=dyaboo_user;Password=dyaboo_secret''',
+  # Valores placeholder en .env.example
+  '''CAMBIAR_EN_PRODUCCION''',
+  # Default de docker-compose para desarrollo local
+  '''dyaboo-dev-local-insecure-change-before-production''',
+]
