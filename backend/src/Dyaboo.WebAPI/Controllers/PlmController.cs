@@ -20,6 +20,22 @@ public class ProductReferencesController(
     private static readonly string[] AllowedTypes = ["image/jpeg", "image/png", "image/webp"];
     private const long MaxFileSize = 10 * 1024 * 1024; // 10 MB
 
+    // Magic bytes: JPEG=FF D8 FF, PNG=89 50 4E 47, WebP=52 49 46 46
+    private static async Task<bool> IsValidImageSignatureAsync(IFormFile file)
+    {
+        var buffer = new byte[12];
+        await using var stream = file.OpenReadStream();
+        var read = await stream.ReadAsync(buffer.AsMemory(0, 12));
+        if (read < 4) return false;
+
+        bool isJpeg = buffer[0] == 0xFF && buffer[1] == 0xD8 && buffer[2] == 0xFF;
+        bool isPng  = buffer[0] == 0x89 && buffer[1] == 0x50 && buffer[2] == 0x4E && buffer[3] == 0x47;
+        bool isWebp = buffer[0] == 0x52 && buffer[1] == 0x49 && buffer[2] == 0x46 && buffer[3] == 0x46
+                   && read >= 12
+                   && buffer[8] == 0x57 && buffer[9] == 0x45 && buffer[10] == 0x42 && buffer[11] == 0x50;
+        return isJpeg || isPng || isWebp;
+    }
+
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<ProductReferenceListItem>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll(CancellationToken ct)
@@ -67,6 +83,9 @@ public class ProductReferencesController(
 
         if (!AllowedTypes.Contains(file.ContentType.ToLower()))
             return BadRequest(new { error = "Solo se aceptan imágenes JPG, PNG o WebP." });
+
+        if (!await IsValidImageSignatureAsync(file))
+            return BadRequest(new { error = "El contenido del archivo no corresponde a una imagen válida." });
 
         var ext      = Path.GetExtension(file.FileName);
         var fileName = $"{Guid.NewGuid()}{ext}";

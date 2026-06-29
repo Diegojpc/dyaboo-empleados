@@ -1,8 +1,10 @@
 using System.Security.Claims;
 using Dyaboo.Application.Features.Auth.Login;
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Dyaboo.WebAPI.Controllers;
 
@@ -15,12 +17,17 @@ public class AuthController : ControllerBase
     public AuthController(IMediator mediator) => _mediator = mediator;
 
     [HttpPost("login")]
+    [EnableRateLimiting("login")]
     public async Task<IActionResult> Login([FromBody] LoginCommand command)
     {
         try
         {
             var result = await _mediator.Send(command);
             return Ok(result);
+        }
+        catch (ValidationException ex)
+        {
+            return BadRequest(new { errors = ex.Errors.Select(e => e.ErrorMessage) });
         }
         catch (UnauthorizedAccessException ex)
         {

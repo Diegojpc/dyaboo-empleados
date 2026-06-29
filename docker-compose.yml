@@ -76,6 +76,10 @@ services:
       Minio__Bucket:    dyaboo-assets
       Minio__PublicUrl: http://localhost:9000
       Minio__UseSSL:    "false"
+      Jwt__Key:         ${JWT_SECRET_KEY}
+      Jwt__Issuer:      ${JWT_ISSUER:-dyaboo-api}
+      Jwt__Audience:    ${JWT_AUDIENCE:-dyaboo-frontend}
+      Cors__AllowedOrigins__0: http://localhost:3000
     ports:
       - "8080:8080"
     networks:

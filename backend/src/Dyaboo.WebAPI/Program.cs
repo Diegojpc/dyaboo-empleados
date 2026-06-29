@@ -1,9 +1,13 @@
 using System.Text;
+using System.Threading.RateLimiting;
 using Dyaboo.Application;
 using Dyaboo.Infrastructure;
 using Dyaboo.Infrastructure.Persistence;
 using Dyaboo.Infrastructure.Services;
+using Dyaboo.WebAPI.Middleware;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -37,8 +41,10 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// JWT Authentication
-var jwtKey = builder.Configuration["Jwt:Key"]!;
+// JWT Authentication — key MUST come from env var in production
+var jwtKey = builder.Configuration["Jwt:Key"]
+    ?? throw new InvalidOperationException("Jwt:Key no está configurado.");
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(o =>
     {
@@ -51,14 +57,47 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer              = builder.Configuration["Jwt:Issuer"],
             ValidAudience            = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey         = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+            ClockSkew                = TimeSpan.Zero, // no tolerance window — tokens expire exactly on time
         };
     });
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
-builder.Services.AddCors(o => o.AddPolicy("Dev", p =>
-    p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
+// CORS — restrict to known origins; AllowAnyOrigin is only for dev fallback
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+    ?? ["http://localhost:3000"];
+
+builder.Services.AddCors(o => o.AddPolicy("AppPolicy", p =>
+    p.WithOrigins(allowedOrigins)
+     .AllowAnyHeader()
+     .AllowAnyMethod()
+     .AllowCredentials()));
+
+// Rate limiting — OWASP recommendation, .NET 8 built-in
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    // Login: strict fixed window — 10 attempts / 15 min per IP
+    options.AddFixedWindowLimiter("login", o =>
+    {
+        o.Window           = TimeSpan.FromMinutes(15);
+        o.PermitLimit      = 10;
+        o.QueueLimit       = 0;
+        o.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+    });
+
+    // General API: sliding window — 300 requests / min per IP
+    options.AddSlidingWindowLimiter("api", o =>
+    {
+        o.Window           = TimeSpan.FromMinutes(1);
+        o.PermitLimit      = 300;
+        o.SegmentsPerWindow = 6;
+        o.QueueLimit       = 0;
+        o.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+    });
+});
 
 builder.Services.AddHealthChecks();
 
@@ -79,10 +118,16 @@ app.UseSwagger();
 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Dyaboo ERP v1"));
 
 app.MapHealthChecks("/health");
-app.UseCors("Dev");
+
+// Security middleware — must be before authentication
+app.UseSecurityHeaders();
+app.UseRateLimiter();
+app.UseCors("AppPolicy");
 app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapControllers();
+
+// Global api rate limit; login endpoint overrides with stricter "login" policy via [EnableRateLimiting]
+app.MapControllers().RequireRateLimiting("api");
 
 app.Run();

@@ -1,0 +1,147 @@
+name: Security Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Weekly scan every Monday at 08:00 UTC
+    - cron: '0 8 * * 1'
+
+jobs:
+  # ─────────────────────────────────────────────
+  # 1. Secret scanning — Gitleaks
+  # ─────────────────────────────────────────────
+  secrets:
+    name: Secret Scanning (Gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # full history for comprehensive scan
+
+      - name: Gitleaks scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ─────────────────────────────────────────────
+  # 2. SAST — CodeQL (C# + TypeScript)
+  # ─────────────────────────────────────────────
+  codeql:
+    name: SAST (CodeQL)
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [csharp, javascript-typescript]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-and-quality
+
+      - name: Setup .NET (for C# build)
+        if: matrix.language == 'csharp'
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build .NET (for C# analysis)
+        if: matrix.language == 'csharp'
+        run: dotnet build backend/Dyaboo.sln --configuration Release
+
+      - name: Autobuild (TypeScript)
+        if: matrix.language == 'javascript-typescript'
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"
+
+  # ─────────────────────────────────────────────
+  # 3. SCA — Trivy (NuGet + npm CVEs)
+  # ─────────────────────────────────────────────
+  trivy-deps:
+    name: SCA — Dependencies (Trivy)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Trivy scan — backend NuGet
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          scan-ref: backend/
+          scanners: vuln
+          severity: HIGH,CRITICAL
+          exit-code: '1'
+          format: table
+
+      - name: Trivy scan — frontend npm
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          scan-ref: frontend/
+          scanners: vuln
+          severity: HIGH,CRITICAL
+          exit-code: '1'
+          format: table
+
+  # ─────────────────────────────────────────────
+  # 4. Container scanning — Trivy (Docker images)
+  # ─────────────────────────────────────────────
+  trivy-containers:
+    name: Container Scan (Trivy)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build API image
+        run: docker build -t dyaboo-api:scan ./backend
+
+      - name: Trivy scan — API image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: dyaboo-api:scan
+          scanners: vuln,secret,misconfig
+          severity: HIGH,CRITICAL
+          exit-code: '1'
+          format: sarif
+          output: trivy-api.sarif
+
+      - name: Upload API scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy-api.sarif
+          category: trivy-api
+
+      - name: Build Frontend image
+        run: docker build -t dyaboo-frontend:scan ./frontend
+
+      - name: Trivy scan — Frontend image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: dyaboo-frontend:scan
+          scanners: vuln,secret,misconfig
+          severity: HIGH,CRITICAL
+          exit-code: '1'
+          format: sarif
+          output: trivy-fe.sarif
+
+      - name: Upload Frontend scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy-fe.sarif
+          category: trivy-frontend
