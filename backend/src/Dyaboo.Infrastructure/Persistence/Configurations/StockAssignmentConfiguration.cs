@@ -13,6 +13,7 @@ public class StockAssignmentConfiguration : IEntityTypeConfiguration<StockAssign
         builder.HasKey(a => a.Id);
         builder.Property(a => a.Id).ValueGeneratedNever();
         builder.Property(a => a.Quantity).IsRequired();
+        builder.Property(a => a.RemainingQuantity).IsRequired();
 
         builder.HasOne(a => a.WarehouseLocation)
             .WithMany()

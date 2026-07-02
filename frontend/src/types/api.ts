@@ -150,3 +150,112 @@ export interface WarehouseStatusResult {
   occupancyPercentage: number
   aisles: AisleStatus[]
 }
+
+// ── Producción ────────────────────────────────────────────────────────────
+export interface ConfeccionistaDto {
+  id: string
+  name: string
+  contactName: string
+  phone: string
+  city: string
+  isActive: boolean
+}
+
+export interface CuttingOrderItemDto {
+  id: string
+  sku: string
+  size: string
+  color: string
+  plannedQuantity: number
+  cutQuantity: number
+}
+
+export interface CuttingOrderDto {
+  id: string
+  orderCode: string
+  productReferenceName: string
+  status: 'InProgress' | 'Completed'
+  notes: string | null
+  totalPlannedUnits: number
+  totalCutUnits: number
+  hasSewingOrder: boolean
+  items: CuttingOrderItemDto[]
+  createdAt: string
+  completedAt: string | null
+}
+
+export interface SewingOrderItemDto {
+  id: string
+  sku: string
+  size: string
+  color: string
+  quantitySent: number
+  quantityApproved: number
+  quantityRejected: number
+}
+
+export interface SewingOrderDto {
+  id: string
+  orderCode: string
+  cuttingOrderCode: string
+  confeccionistaName: string
+  status: 'Assigned' | 'Received'
+  totalSent: number
+  totalApproved: number
+  totalRejected: number
+  items: SewingOrderItemDto[]
+  createdAt: string
+  receivedAt: string | null
+}
+
+// ── Distribución ──────────────────────────────────────────────────────────
+export interface CustomerDto {
+  id: string
+  name: string
+  type: 'TiendaPropia' | 'MayoristaExterno'
+  contactName: string
+  phone: string
+  city: string
+  isActive: boolean
+}
+
+export interface SalesOrderItemDto {
+  id: string
+  sku: string
+  size: string
+  color: string
+  quantity: number
+  unitPrice: number
+  lineTotal: number
+}
+
+export type SalesOrderStatus = 'Draft' | 'Confirmed' | 'Dispatched' | 'Delivered' | 'Cancelled'
+
+export interface SalesOrderDto {
+  id: string
+  orderCode: string
+  customerName: string
+  customerType: string
+  status: SalesOrderStatus
+  notes: string | null
+  totalUnits: number
+  total: number
+  items: SalesOrderItemDto[]
+  createdAt: string
+  confirmedAt: string | null
+  dispatchedAt: string | null
+  deliveredAt: string | null
+}
+
+export interface PickingLine {
+  locationCode: string
+  sku: string
+  quantity: number
+}
+
+export interface DispatchResult {
+  orderId: string
+  orderCode: string
+  totalUnitsDispatched: number
+  pickingLines: PickingLine[]
+}

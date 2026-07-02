@@ -29,7 +29,7 @@ public class GetWarehouseStatusHandler(IApplicationDbContext db)
                                     : 0.0,
                 Skus = l.Id == l.Id  // fuerza inclusión del campo para el join posterior
                     ? db.StockAssignments
-                        .Where(sa => sa.WarehouseLocationId == l.Id)
+                        .Where(sa => sa.WarehouseLocationId == l.Id && sa.RemainingQuantity > 0)
                         .Select(sa => sa.ProductVariant.SKU)
                         .Distinct()
                         .ToList()

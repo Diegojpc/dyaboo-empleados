@@ -13,5 +13,13 @@ public interface IApplicationDbContext
     DbSet<ProductionOrderItem> ProductionOrderItems { get; }
     DbSet<WarehouseLocation> WarehouseLocations { get; }
     DbSet<StockAssignment> StockAssignments { get; }
+    DbSet<Confeccionista> Confeccionistas { get; }
+    DbSet<CuttingOrder> CuttingOrders { get; }
+    DbSet<CuttingOrderItem> CuttingOrderItems { get; }
+    DbSet<SewingOrder> SewingOrders { get; }
+    DbSet<SewingOrderItem> SewingOrderItems { get; }
+    DbSet<Customer> Customers { get; }
+    DbSet<SalesOrder> SalesOrders { get; }
+    DbSet<SalesOrderItem> SalesOrderItems { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

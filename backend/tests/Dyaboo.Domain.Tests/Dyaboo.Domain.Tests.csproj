@@ -22,4 +22,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Dyaboo.Domain\Dyaboo.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

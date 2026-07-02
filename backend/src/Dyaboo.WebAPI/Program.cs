@@ -111,6 +111,8 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
     await WarehouseSeeder.SeedAsync(db);
     await UserSeeder.SeedAsync(db);
+    await ConfeccionistaSeeder.SeedAsync(db);
+    await CustomerSeeder.SeedAsync(db);
 
     var minio = scope.ServiceProvider.GetRequiredService<MinioInitializer>();
     await minio.InitializeAsync();

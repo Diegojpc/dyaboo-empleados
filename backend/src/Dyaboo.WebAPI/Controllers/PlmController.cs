@@ -9,9 +9,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Dyaboo.WebAPI.Controllers;
 
+// Roles de escritura a nivel de acción; la lectura del catálogo es más amplia
+// porque Producción, Bodega y Distribución la necesitan para su operación.
 [ApiController]
 [Route("api/plm/[controller]")]
-[Authorize(Roles = "Ceo,Socio,LiderPlm,Disenadora,Vendedor")]
+[Authorize]
 public class ProductReferencesController(
     IMediator mediator,
     IApplicationDbContext db,
@@ -37,6 +39,7 @@ public class ProductReferencesController(
     }
 
     [HttpGet]
+    [Authorize(Roles = "Ceo,Socio,LiderPlm,Disenadora,Vendedor,LiderProduccion,LiderBodega,Operario,LiderDistribucion")]
     [ProducesResponseType(typeof(IReadOnlyList<ProductReferenceListItem>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll(CancellationToken ct)
     {
@@ -45,6 +48,7 @@ public class ProductReferencesController(
     }
 
     [HttpPost]
+    [Authorize(Roles = "Ceo,Socio,LiderPlm,Disenadora,Vendedor")]
     [ProducesResponseType(typeof(ProductReferenceResult), StatusCodes.Status201Created)]
     public async Task<IActionResult> Create(
         [FromBody] CreateProductReferenceCommand command,
@@ -61,6 +65,7 @@ public class ProductReferencesController(
 
     /// <summary>Sube una imagen a MinIO y registra el metadata en la BD.</summary>
     [HttpPost("{id:guid}/images")]
+    [Authorize(Roles = "Ceo,Socio,LiderPlm,Disenadora,Vendedor")]
     [RequestSizeLimit(MaxFileSize + 1024)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -112,6 +117,7 @@ public class ProductReferencesController(
 
     /// <summary>Elimina la imagen de MinIO y su metadata de la BD.</summary>
     [HttpDelete("{id:guid}/images/{imageId:guid}")]
+    [Authorize(Roles = "Ceo,Socio,LiderPlm,Disenadora,Vendedor")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteImage(Guid id, Guid imageId, CancellationToken ct)

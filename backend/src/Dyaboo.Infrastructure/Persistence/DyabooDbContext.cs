@@ -15,6 +15,14 @@ public class DyabooDbContext(DbContextOptions<DyabooDbContext> options)
     public DbSet<ProductionOrderItem> ProductionOrderItems => Set<ProductionOrderItem>();
     public DbSet<WarehouseLocation> WarehouseLocations => Set<WarehouseLocation>();
     public DbSet<StockAssignment> StockAssignments => Set<StockAssignment>();
+    public DbSet<Confeccionista> Confeccionistas => Set<Confeccionista>();
+    public DbSet<CuttingOrder> CuttingOrders => Set<CuttingOrder>();
+    public DbSet<CuttingOrderItem> CuttingOrderItems => Set<CuttingOrderItem>();
+    public DbSet<SewingOrder> SewingOrders => Set<SewingOrder>();
+    public DbSet<SewingOrderItem> SewingOrderItems => Set<SewingOrderItem>();
+    public DbSet<Customer> Customers => Set<Customer>();
+    public DbSet<SalesOrder> SalesOrders => Set<SalesOrder>();
+    public DbSet<SalesOrderItem> SalesOrderItems => Set<SalesOrderItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
