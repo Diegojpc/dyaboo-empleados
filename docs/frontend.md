@@ -42,7 +42,7 @@ flowchart TD
     TOKEN -->|No tiene| LOGIN_PAGE
     TOKEN -->|Tiene| MAIN_APP
     MAIN_APP --> API_CHECK
-    API_CHECK -->|Token expirado (401)| LOGIN_PAGE
+    API_CHECK -->|Token expirado 401| LOGIN_PAGE
 ```
 
 > **Nota de seguridad**: El token se almacena en `localStorage`. Para el MVP interno con Electron y red LAN esto es aceptable; en producción web pública migrar a HttpOnly cookies (ver recomendaciones del documento de seguridad).
