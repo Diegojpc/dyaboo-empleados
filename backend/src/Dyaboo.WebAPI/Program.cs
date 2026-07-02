@@ -113,6 +113,9 @@ using (var scope = app.Services.CreateScope())
     await UserSeeder.SeedAsync(db);
     await ConfeccionistaSeeder.SeedAsync(db);
     await CustomerSeeder.SeedAsync(db);
+    await HolidaySeeder.SeedAsync(db);
+    await EmployeeSeeder.SeedAsync(db);
+    await RrhhUserSeeder.SeedAsync(db);
 
     var minio = scope.ServiceProvider.GetRequiredService<MinioInitializer>();
     await minio.InitializeAsync();

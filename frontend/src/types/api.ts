@@ -259,3 +259,81 @@ export interface DispatchResult {
   totalUnitsDispatched: number
   pickingLines: PickingLine[]
 }
+
+// ── RRHH ──────────────────────────────────────────────────────────────────
+export type CompanyArea =
+  | 'Diseno' | 'Mercadeo' | 'Comercial' | 'Tiendas'
+  | 'Corte' | 'Produccion' | 'Logistica'
+  | 'Financiera' | 'Proyectos'
+
+export type OvertimeType =
+  | 'ExtraDiurna' | 'ExtraNocturna' | 'RecargoNocturno'
+  | 'DominicalFestivo' | 'ExtraDiurnaDominical' | 'ExtraNocturnaDominical'
+
+export interface EmpleadoDto {
+  id: string
+  fullName: string
+  documentNumber: string
+  jobTitle: string
+  area: CompanyArea
+  direction: string
+  hireDate: string
+  monthlySalary: number
+  weeklyHours: number
+  hourlyRate: number
+  isActive: boolean
+}
+
+export interface NovedadHorasDto {
+  id: string
+  employeeId: string
+  employeeName: string
+  date: string
+  type: OvertimeType
+  hours: number
+  hourlyRateSnapshot: number
+  surchargePercent: number
+  amount: number
+  notes: string | null
+}
+
+export interface PeriodoVacacionesDto {
+  id: string
+  startDate: string
+  endDate: string
+  businessDays: number
+  notes: string | null
+}
+
+export interface SaldoVacacionesDto {
+  employeeId: string
+  fullName: string
+  jobTitle: string
+  hireDate: string
+  accruedDays: number
+  takenDays: number
+  balanceDays: number
+  periods: PeriodoVacacionesDto[]
+}
+
+export interface FestivoDto {
+  date: string
+  name: string
+}
+
+export interface FilaResumenMensualDto {
+  employeeId: string
+  fullName: string
+  documentNumber: string
+  jobTitle: string
+  monthlySalary: number
+  horasExtraDiurna: number
+  horasExtraNocturna: number
+  horasRecargoNocturno: number
+  horasDominicalFestivo: number
+  horasExtraDiurnaDominical: number
+  horasExtraNocturnaDominical: number
+  totalHoras: number
+  totalRecargos: number
+  diasVacaciones: number
+}

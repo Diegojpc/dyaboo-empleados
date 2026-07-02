@@ -40,8 +40,8 @@ function getCookie(name: string): string | null {
 
 // Permisos por rol
 const ROLE_NAV: Record<string, string[]> = {
-  Ceo:               ['/', '/plm', '/sag', '/wms', '/produccion', '/distribucion'],
-  Socio:             ['/', '/plm', '/sag', '/wms', '/produccion', '/distribucion'],
+  Ceo:               ['/', '/plm', '/sag', '/wms', '/produccion', '/distribucion', '/rrhh'],
+  Socio:             ['/', '/plm', '/sag', '/wms', '/produccion', '/distribucion', '/rrhh'],
   LiderPlm:          ['/', '/plm'],
   LiderProduccion:   ['/', '/sag', '/produccion'],
   LiderBodega:       ['/', '/wms'],
@@ -49,6 +49,7 @@ const ROLE_NAV: Record<string, string[]> = {
   Disenadora:        ['/', '/plm'],
   Vendedor:          ['/', '/plm/correria'],
   Operario:          ['/', '/wms'],
+  GestionHumana:     ['/', '/rrhh'],
 }
 
 export function canAccess(role: string, path: string): boolean {
@@ -64,6 +65,7 @@ export function navItemsForRole(role: string) {
     { href: '/wms',          label: 'WMS',          icon: '◫' },
     { href: '/produccion',   label: 'Producción',   icon: '⚙' },
     { href: '/distribucion', label: 'Distribución', icon: '◎' },
+    { href: '/rrhh',         label: 'RRHH',         icon: '◧' },
   ]
   const allowed = ROLE_NAV[role] ?? ['/']
   return all.filter(item => allowed.some(r => item.href === r || r.startsWith(item.href + '/')))

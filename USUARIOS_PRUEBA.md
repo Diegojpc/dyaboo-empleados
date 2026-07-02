@@ -15,6 +15,7 @@
 | **Diseñadora** | `disenadora@dyaboo.com` | Dashboard, PLM |
 | **Vendedor** | `vendedor@dyaboo.com` | Dashboard, PLM (correría) |
 | **Operario** | `operario@dyaboo.com` | Dashboard, WMS |
+| **Gestión Humana** | `rrhh@dyaboo.com` | Dashboard, RRHH |
 
 ## Permisos por endpoint
 
@@ -25,6 +26,10 @@
 | `GET/POST /api/plm/*` | Ceo, Socio, LiderPlm, Disenadora, Vendedor |
 | `GET/POST /api/sag/*` | Ceo, Socio, LiderProduccion |
 | `GET/POST /api/wms/*` | Ceo, Socio, LiderBodega, Operario |
+| `GET/POST /api/produccion/*` | Ceo, Socio, LiderProduccion |
+| `GET/POST /api/distribucion/*` | Ceo, Socio, LiderDistribucion |
+| `GET/POST /api/rrhh/*` | Ceo, Socio, GestionHumana |
+| `GET /api/plm/productreferences` | Todos los roles operativos (catálogo de lectura) |
 
 ## Notas
 

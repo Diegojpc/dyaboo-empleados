@@ -23,6 +23,10 @@ public class DyabooDbContext(DbContextOptions<DyabooDbContext> options)
     public DbSet<Customer> Customers => Set<Customer>();
     public DbSet<SalesOrder> SalesOrders => Set<SalesOrder>();
     public DbSet<SalesOrderItem> SalesOrderItems => Set<SalesOrderItem>();
+    public DbSet<Employee> Employees => Set<Employee>();
+    public DbSet<OvertimeEntry> OvertimeEntries => Set<OvertimeEntry>();
+    public DbSet<VacationPeriod> VacationPeriods => Set<VacationPeriod>();
+    public DbSet<Holiday> Holidays => Set<Holiday>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -17,6 +17,7 @@ const ROLE_LABELS: Record<string, string> = {
   Disenadora:        'Diseñadora',
   Vendedor:          'Vendedor',
   Operario:          'Operario',
+  GestionHumana:     'Gestión Humana',
 }
 
 export default function Sidebar() {

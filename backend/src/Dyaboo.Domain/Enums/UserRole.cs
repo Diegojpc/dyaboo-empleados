@@ -10,5 +10,6 @@ public enum UserRole
     LiderDistribucion,
     Disenadora,
     Vendedor,
-    Operario
+    Operario,
+    GestionHumana
 }

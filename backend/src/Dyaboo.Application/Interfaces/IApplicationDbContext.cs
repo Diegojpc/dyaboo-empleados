@@ -21,5 +21,9 @@ public interface IApplicationDbContext
     DbSet<Customer> Customers { get; }
     DbSet<SalesOrder> SalesOrders { get; }
     DbSet<SalesOrderItem> SalesOrderItems { get; }
+    DbSet<Employee> Employees { get; }
+    DbSet<OvertimeEntry> OvertimeEntries { get; }
+    DbSet<VacationPeriod> VacationPeriods { get; }
+    DbSet<Holiday> Holidays { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }
